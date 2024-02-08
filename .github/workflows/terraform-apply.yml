@@ -52,22 +52,3 @@ jobs:
           name: tfplan
           path: tfplan
 
- terraform-apply:
-    name: 'Terraform Apply'
-    runs-on: ubuntu-latest     
-    needs: terraform-plan
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3    
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Initialize Terraform
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply
-
-      

@@ -14,8 +14,8 @@ env:
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID}}
 
 jobs:
-  terraform:
-    name: 'Terraform'
+  terraform-plan:
+    name: 'Terraform Plan'
     runs-on: ubuntu-latest
     environment: production
 
@@ -47,4 +47,28 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: tfplan
-          path: tfplan     
+          path: tfplan
+
+  terraform-apply:
+    name: 'Terraform Apply'
+    runs-on: ubuntu-latest     
+    needs: terraform-plan
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3    
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: tfplan
+          path: .
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan      

@@ -3,8 +3,10 @@ name: 'Terraform plan and apply'
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
+permissions:
+  contents: read
+  
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID}}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET}}
@@ -17,11 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-
     steps:
       # Checkout the repository to the GitHub Actions runner
       - name: Checkout
@@ -29,7 +26,7 @@ jobs:
 
       # Login to Azure via CLI
       - name: Login to Azure
-        uses: Azure/login@v1
+        uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -43,12 +40,11 @@ jobs:
 
       # Generates an execution plan for Terraform
       - name: Terraform Plan
-        run: terraform plan -input=false - out=tfplan
+        run: terraform plan -input=false -out=tfplan
 
       # Save an execution plan for Terraform
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v2
         with:
           name: tfplan
-          path: tfplan
-
+          path: tfplan     
